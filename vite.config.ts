@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react-swc'
 import path from 'path'
 
 export default defineConfig({
-  base: '/my-kirov-map-app/',
+  base: '/my-kirov-map-app-new2/',
   plugins: [react()],
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
@@ -50,6 +50,7 @@ export default defineConfig({
   build: {
     target: 'esnext',
     outDir: 'docs',
+    emptyOutDir: true,
   },
   server: {
     port: 3000,

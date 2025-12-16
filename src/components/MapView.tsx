@@ -1,6 +1,6 @@
-import { useCallback } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { YMaps, Map, Placemark, Polyline, Clusterer } from "@pbe/react-yandex-maps"
-
+import "leaflet/dist/leaflet.css"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 import { Button } from "./ui/button"
 import { Badge } from "./ui/badge"
@@ -8,6 +8,7 @@ import { X, Route, Navigation, MapPin, AlertCircle } from "lucide-react"
 import { ImageWithFallback } from "./figma/ImageWithFallback"
 
 import type { Place } from "../types/place"
+
 
 interface MapViewProps {
   currentRoute: Place[]
@@ -17,6 +18,7 @@ interface MapViewProps {
   userLocation: { latitude: number; longitude: number }
 }
 
+
 export function MapView({
   currentRoute,
   onRemoveFromRoute,
@@ -25,29 +27,55 @@ export function MapView({
   userLocation,
 }: MapViewProps) {
   // Центр карты
-  const center: [number, number] =
-    currentRoute.length > 0
-      ? [currentRoute[0].latitude, currentRoute[0].longitude]
-      : [userLocation.latitude, userLocation.longitude]
+ 
+ const [mapCenter, setMapCenter] = useState<[number, number]>([
+  userLocation.latitude,
+  userLocation.longitude,
+])
+
+const [mapZoom, setMapZoom] = useState(15)
+const center: [number, number] = mapCenter
+useEffect(() => {
+  if (!navigator.geolocation) return
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      setMapCenter([
+        position.coords.latitude,
+        position.coords.longitude,
+      ])
+      setMapZoom(15)
+    },
+    () => {
+      // если отказали — остаёмся на userLocation
+      setMapCenter([
+        userLocation.latitude,
+        userLocation.longitude,
+      ])
+      setMapZoom(15)
+    }
+  )
+}, [userLocation])
 
   // Линия маршрута: сначала пользователь, затем все места
   const routeCoordinates: [number, number][] = [
-    [userLocation.latitude, userLocation.longitude] as [number, number],
-    ...currentRoute.map((p): [number, number] => [p.latitude, p.longitude])
+    mapCenter,
+   ...currentRoute.map((p): [number, number] => [p.latitude, p.longitude])
   ]
 
   // Открытие Яндекс.Навигатора
   const openYandexNavigator = useCallback(() => {
-    if (currentRoute.length === 0) return
+  if (currentRoute.length === 0) return
 
-    const allCoords = [
-      `${userLocation.latitude},${userLocation.longitude}`,
-      ...currentRoute.map(p => `${p.latitude},${p.longitude}`)
-    ].join("~")
+  const allCoords = [
+    `${mapCenter[0]},${mapCenter[1]}`, // <-- актуальная геолокация
+    ...currentRoute.map(p => `${p.latitude},${p.longitude}`)
+  ].join("~")
 
-    const url = `https://yandex.ru/maps/?rtext=${allCoords}&rtt=mt`
-    window.open(url, "_blank")
-  }, [currentRoute, userLocation])
+  const url = `https://yandex.ru/maps/?rtext=${allCoords}&rtt=mt`
+  window.open(url, "_blank")
+}, [currentRoute, mapCenter])
+
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -61,17 +89,20 @@ export function MapView({
             </CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="text-xs text-muted-foreground mb-2">
+              Для построения маршрута требуется подключение к интернету и загрузка Яндекс.Карт.
+            </div>
             <div className="h-96 lg:h-[600px] rounded-lg overflow-hidden">
               <YMaps query={{ lang: "ru_RU" }}>
                 <Map
-                  defaultState={{ center, zoom: 13 }}
+                  state={{ center, zoom: mapZoom }}
                   width="100%"
                   height="100%"
                   modules={["geoObject.addon.balloon", "control.ZoomControl"]}
                 >
                   {/* Маркер пользователя */}
                   <Placemark
-                    geometry={[userLocation.latitude, userLocation.longitude]}
+                    geometry={mapCenter}
                     options={{ preset: "islands#blueCircleIcon" }}
                     properties={{ balloonContent: "Вы здесь" }}
                   />
@@ -108,7 +139,7 @@ export function MapView({
                     ))}
                   </Clusterer>
 
-                  {/* Линия маршрута */}
+                 {/* Линия маршрута */}
                   {routeCoordinates.length > 1 && (
                     <Polyline
                       geometry={routeCoordinates}

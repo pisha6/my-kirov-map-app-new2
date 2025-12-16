@@ -89,7 +89,7 @@ export function Collections({
       category: 'Премиум',
       icon: Star,
       userComment: collectionComments['4'],
-      placeIds: ['3', '20', '62', '4', '37', '7', '58', '10', '109', '41', '44', '106']
+      placeIds: ['3', '20', '62', '4', '37', '58', '10', '109', '41', '44', '106']
     },
     {
       id: '5',

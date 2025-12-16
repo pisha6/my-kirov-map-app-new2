@@ -4,21 +4,6 @@ import type { Place } from '../types/place'
 export const PLACES: Place[] = [
     {
       id: "1",
-      name: "Александровский сад",
-      category: "Парк",
-      address: "ул. Карла Маркса, 75",
-      hours: "Круглосуточно",
-      rating: 4.6,
-      priceLevel: "budget",
-      distance: "200 м",
-      image: "https://core-pht-proxy.maps.yandex.ru/v1/photos/download?photo_id=GM6eVKKYWyezf_p16jX_Eg&image_size=X5L",
-      isVisited: true,
-      isFavorite: true,
-      latitude: 58.607913,
-      longitude: 49.686321,
-    },
-    {
-      id: "5",
       name: "Парк имени С. М. Кирова",
       category: "Парк",
       address: "Октябрьский проспект",
@@ -97,6 +82,21 @@ export const PLACES: Place[] = [
       image: "https://core-pht-proxy.maps.yandex.ru/v1/photos/download?photo_id=YZWQORBEMlxXm_KmT6PfWg&image_size=XXL",
       latitude: 58.596464,
       longitude: 49.666972,
+    },
+    {
+      id: "5",
+      name: "Александровский сад",
+      category: "Парк",
+      address: "ул. Карла Маркса, 75",
+      hours: "Круглосуточно",
+      rating: 4.6,
+      priceLevel: "budget",
+      distance: "200 м",
+      image: "https://core-pht-proxy.maps.yandex.ru/v1/photos/download?photo_id=GM6eVKKYWyezf_p16jX_Eg&image_size=X5L",
+      isVisited: true,
+      isFavorite: true,
+      latitude: 58.607913,
+      longitude: 49.686321,
     },
 
     // Кафе и кофейни
